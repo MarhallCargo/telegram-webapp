@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+</head>
+<body>
+    <h1>Добро пожаловать, {{ username }}!</h1>
+    <p>Ваши заказы:</p>
+    {% if orders %}
+        <ul>
+        {% for order in orders %}
+            <li>Заказ {{ order.id }}: {{ order.description }} ({{ order.created_at }})</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>У вас пока нет заказов.</p>
+    {% endif %}
+</body>
+</html>

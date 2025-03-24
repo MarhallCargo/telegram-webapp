@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Профиль</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fbeaec, #f5f7fa);
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      max-width: 600px;
+      width: 100%;
+    }
+    h1, h2, h3 {
+      color: #2c2e33;
+    }
+    p {
+      margin: 8px 0;
+    }
+    .section {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #eee;
+    }
+    .button {
+      display: inline-block;
+      margin: 6px 4px;
+      padding: 10px 16px;
+      background-color: #e47979;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .button:hover {
+      background-color: #d16565;
+    }
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 6px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>👤 Профиль: {{ user.username }}</h1>
+
+    <div class="section">
+      <h3>Данные пользователя</h3>
+      <p>🔑 Логин: <strong>{{ user.username }}</strong></p>
+      <p>🧩 Роль: <strong>{{ user.role }}</strong></p>
+      <p>📱 Телефон: <em>(позже можно привязать)</em></p>
+      <a href="/profile/edit" class="button">✏️ Изменить данные</a>
+    </div>
+
+    <div class="section">
+      <h3>💸 Финансы</h3>
+      <p>💰 Баланс: <strong>{{ user.balance if user.balance is defined else 0 }}</strong> юаней</p>
+      <a href="/balance/history" class="button">📊 История баланса</a>
+      <a href="/dashboard" class="button">📦 Мои заказы</a>
+    </div>
+
+    <div class="section">
+      <h3>⚙️ Настройки</h3>
+      <div class="setting-row">
+        <span>🌐 Язык</span>
+        <select>
+          <option>Русский</option>
+          <option>English</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <span>🌙 Тёмная тема</span>
+        <input type="checkbox">
+      </div>
+      <div class="setting-row">
+        <span>🔔 Telegram-уведомления</span>
+        <input type="checkbox">
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>🔗 Связанные аккаунты</h3>
+      <p>🤖 Telegram: <em>(ещё не привязан)</em></p>
+      <p>🔐 Google: <em>(ещё не привязан)</em></p>
+      <a href="/auth/google/login" class="button">Привязать Google</a>
+    </div>
+
+    <div class="section">
+      <h3>🔐 Безопасность</h3>
+      <a href="/profile/edit" class="button">Сменить пароль</a>
+      <a href="/profile/delete" class="button" style="background-color: #777;">Удалить аккаунт</a>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;"><a href="/dashboard" class="button" style="background-color: #4a90e2;">🏠 Вернуться в кабинет</a>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="/logout" class="button" style="background-color: #999;">🚪 Выйти и аккаунта</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        #confirmBox, #trackBox {
+            display: none;
+            position: fixed;
+            top: 40%;
+            left: 40%;
+            background: white;
+            border: 1px solid black;
+            padding: 20px;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    <a href="/admin/dashboard"><button>⬅️ Назад в админку</button></a>
+    <br><br>
+
+    {% if orders %}
+        <ul>
+        {% for order in orders %}
+            <li>
+                Заказ #{{ order.id }}: {{ order.description }} ({{ order.created_at.strftime('%d.%m.%Y %H:%M') }})<br>
+                Статус: <strong>{{ order.status }}</strong><br>
+
+                {% if order.files %}
+                    <ul>
+                    {% for file in order.files %}
+                        <li>
+                            <a href="/download_file/{{ file.id }}" target="_blank">{{ file.filename }}</a>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if order.status == "новый" %}
+                    <form action="/admin/order/accept/{{ order.id }}" method="post" style="display:inline;">
+                        <button type="submit">✅ Принять</button>
+                    </form>
+                {% elif order.status in ["подтверждение платежа", "оплачено (на проверке)"] %}
+                    <form action="/admin/order/confirm_payment/{{ order.id }}" method="post" style="display:inline;">
+                        <button type="submit">✅ Подтвердить</button>
+                    </form>
+                    <form action="/admin/order/reject_payment/{{ order.id }}" method="post" style="display:inline;">
+                        <button type="submit" style="color: red;">❌ Отклонить</button>
+                    </form>
+
+                {% elif order.status == "в обработке" %}
+                    <form action="/admin/order/ready/{{ order.id }}" method="post" style="display:inline;">
+                        <button type="submit">📦 Собран</button>
+                    </form>
+                    <button onclick="openTrackForm({{ order.id }})">📤 Отправить</button>
+                {% elif order.status == "в пути" %}
+                    <span style="color: green;">⛔ Удаление запрещено</span>
+                {% endif %}
+
+                {% if order.status != "в пути" %}
+                    <button onclick="confirmDelete({{ order.id }})" style="color: red;">🗑 Удалить</button>
+                {% endif %}
+                <hr>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Заказов нет.</p>
+    {% endif %}
+
+    <!-- Удаление -->
+    <div id="confirmBox">
+        <p>Вы точно хотите удалить заказ?</p>
+        <form id="deleteForm" method="post">
+            <button type="submit" style="color:red;">Да, удалить</button>
+            <button type="button" onclick="closeConfirm()">Нет</button>
+        </form>
+    </div>
+
+    <!-- Отправка -->
+    <div id="trackBox">
+        <p>Введите номер груза:</p>
+        <form id="trackForm" method="post">
+            <input type="text" name="track_code" required>
+            <button type="submit">Отправить</button>
+            <button type="button" onclick="closeTrackForm()">Отмена</button>
+        </form>
+    </div>
+
+    <script>
+        function confirmDelete(orderId) {
+            document.getElementById("deleteForm").action = "/admin/order/delete/" + orderId;
+            document.getElementById("confirmBox").style.display = "block";
+        }
+
+        function closeConfirm() {
+            document.getElementById("confirmBox").style.display = "none";
+        }
+
+        function openTrackForm(orderId) {
+            document.getElementById("trackForm").action = "/admin/order/send/" + orderId;
+            document.getElementById("trackBox").style.display = "block";
+        }
+
+        function closeTrackForm() {
+            document.getElementById("trackBox").style.display = "none";
+        }
+    </script>
+</body>
+</html>

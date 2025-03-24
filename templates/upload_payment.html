@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Загрузить подтверждение оплаты</title>
+</head>
+<body>
+    <h2>Загрузка подтверждения оплаты</h2>
+
+    <form action="/topup/upload/{{ topup.id }}" method="post" enctype="multipart/form-data">
+        <label for="file">Выберите файл:</label>
+        <input type="file" name="file" accept=".jpg,.jpeg,.png,.pdf" required>
+        <button type="submit">Отправить</button>
+    </form>
+
+    <br>
+    <a href="/dashboard">← Назад</a>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список пользователей</title>
+</head>
+<body>
+    <h1>Список пользователей</h1>
+    <p>Добро пожаловать, {{ user.username }}!</p>
+    {% if users %}
+        <ul>
+        {% for usr in users %}
+            <li>
+                {{ usr.username }} — Баланс: <strong>{{ usr.balance or 0 }}</strong> ¥
+                <a href="/admin/users/{{ usr.id }}">Подробнее</a>
+
+                <!-- Кнопка изменить -->
+                <form action="/admin/set_balance/{{ usr.id }}" method="get" style="display:inline;">
+                    <button type="submit">💰 Изменить баланс</button>
+                </form>
+            </li>
+        {% endfor %}
+
+
+        </ul>
+    {% else %}
+        <p>Пользователей нет.</p>
+    {% endif %}
+    <a href="/admin/dashboard">Назад в админку</a>
+</body>
+</html>

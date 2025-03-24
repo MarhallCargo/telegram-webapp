@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Чат</title>
+</head>
+<body>
+    <h1>Чат с менеджером</h1>
+    <div id="chat-box" style="border:1px solid #ccc; padding:10px; height:300px; overflow-y:scroll;"></div>
+    <br>
+    <input type="text" id="messageInput" placeholder="Введите сообщение..." style="width:80%;">
+    <button onclick="sendMessage()">Отправить</button>
+
+    <script>
+        const ws = new WebSocket("ws://127.0.0.1:8000/ws/chat");
+        const chatBox = document.getElementById("chat-box");
+
+        ws.onmessage = function(event) {
+            let message = document.createElement("div");
+            message.textContent = event.data;
+            chatBox.appendChild(message);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+
+        function sendMessage() {
+            const input = document.getElementById("messageInput");
+            ws.send(input.value);
+            input.value = "";
+        }
+    </script>
+</body>
+</html>

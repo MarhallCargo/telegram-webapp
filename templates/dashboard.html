@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+            padding: 20px;
+            color: #2c2e33;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .section {
+            background-color: #ffffff;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+        button, .button {
+            display: inline-block;
+            padding: 10px 16px;
+            margin: 6px 4px;
+            background-color: #e47979;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        button:hover, .button:hover {
+            background-color: #d16565;
+        }
+        .order, .topup {
+            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 13px;
+        }
+        input::placeholder, textarea::placeholder {
+            opacity: 0.5;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Добро пожаловать, {{ user.username }}!</h1>
+
+    <div class="section">
+        <p><strong>Баланс:</strong> {{ user.balance if user.balance is defined else 0 }} юаней</p>
+        <a href="/balance/topup" class="button">Пополнить баланс</a>
+    </div>
+
+    <div class="section">
+        <h3>🇨🇳 Курс юаня на {{ now.strftime('%d.%m.%Y') }}:</h3>
+        <ul>
+            <li>350–2.500 ¥ – <strong>{{ (yuan_rate * 1.08) | round(2) }}</strong> ₽ (8%)</li>
+            <li>2.500–10.000 ¥ – <strong>{{ (yuan_rate * 1.05) | round(2) }}</strong> ₽ (5%)</li>
+            <li>10.000–30.000 ¥ – <strong>{{ (yuan_rate * 1.04) | round(2) }}</strong> ₽ (4%)</li>
+            <li>30.000+ ¥ – <strong>{{ (yuan_rate * 1.035) | round(2) }}</strong> ₽ (3.5%)</li>
+        </ul>
+        <h4>💵 Доллар: <strong>{{ usd_rate }}</strong> ₽</h4>
+        <a href="/balance/history" class="button">📊 История баланса</a>
+        <a href="/profile" class="button">⚙️ Профиль</a>
+        <a href="/create_order" class="button">➕ Создать заказ</a>
+        <button class="button" onclick="toggleTopups()" style="position: relative;">
+          💴 Мои заявки
+          {% if active_topup_count > 0 %}
+            <span style="
+              position: absolute;
+              top: -6px;
+              right: -6px;
+              background-color: red;
+              color: white;
+              border-radius: 50%;
+              padding: 2px 6px;
+              font-size: 11px;
+            ">
+              {{ active_topup_count }}
+            </span>
+          {% endif %}
+        </button>
+
+        {% if user.role == "admin" %}
+            <a href="/admin/dashboard" class="button">🛠 Админка</a>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>📦 Ваши заказы</h2>
+        {% if orders %}
+            {% for order in orders %}
+                <div class="order">
+                    <strong>Заказ #{{ order.id }}</strong>: {{ order.description }} ({{ order.created_at }})<br>
+                    <strong>Статус:</strong> {{ order.status }}<br>
+
+                    {% if order.status == "ожидает оплаты" %}
+                        <div style="margin-top: 10px;">
+                            💳 <strong>Реквизиты:</strong><br>
+                            {{ order.payment_details or "Реквизиты не указаны" }}<br>
+                            <form action="/order/upload_payment/{{ order.id }}" method="get">
+                                <button type="submit">📎 Прикрепить файл</button>
+                            </form>
+                            <form action="/order/payment_failed/{{ order.id }}" method="post">
+                                <label style="font-size: 12px;">*не обязательно</label>
+                                <textarea name="reason" placeholder="Причина оплаты..." rows="2"></textarea>
+                                <button type="submit" style="background-color: #bbb;">❌ Не удалось оплатить</button>
+                            </form>
+                        </div>
+                    {% endif %}
+
+                    {% if order.links %}
+                        <div><strong>🔗 Ссылки:</strong>
+                            <ul>
+                                {% for link in order.links %}
+                                    <li><a href="{{ link.url }}" target="_blank">{{ link.url }}</a> — {{ link.note }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    {% if order.attachments %}
+                        <div><strong>📎 Файлы:</strong>
+                            <ul>
+                                {% for att in order.attachments %}
+                                    <li><a href="/{{ att.file_path }}" target="_blank">{{ att.filename }}</a> — {{ att.note }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    {% if order.files %}
+                        <div><strong>📁 Документы:</strong>
+                            <ul>
+                                {% for file in order.files %}
+                                    <li><a href="/download_file/{{ file.id }}" target="_blank">{{ file.filename }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    {% if order.status in ["новый", "в обработке", "собран", "ожидает реквизитов"] %}
+                        <div style="margin-top: 6px;">
+                            {% if order.status == "собран" %}
+                                <form action="/order/confirm/{{ order.id }}" method="post" style="display:inline;">
+                                    <button type="submit">✅ Подтвердить</button>
+                                </form>
+                            {% endif %}
+                            <form action="/edit_order/{{ order.id }}" method="get" style="display:inline;">
+                                <button type="submit">✏️ Редактировать</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Нет заказов.</p>
+        {% endif %}
+    </div>
+
+    <div class="section" id="topupSection" style="display: none;">
+        <h2>💴 Заявки на пополнение</h2>
+        {% if topup_requests %}
+            {% for req in topup_requests %}
+                <div class="topup">
+                    <strong>{{ req.cny_amount }}</strong> ¥ (≈ {{ req.rub_amount }} ₽)<br>
+                    📅 {{ req.created_at.strftime("%d.%m.%Y %H:%M") }}<br>
+                    🏷️ <strong>Статус:</strong>
+                    {% if req.status == "waiting_for_details" %}
+                        <span style="color: gray;">Ожидаем реквизиты</span>
+                    {% elif req.status == "waiting_for_payment" %}
+                        <span style="color: orange;">Ожидаем оплату</span><br>
+                        💳 {{ req.payment_details }}<br>
+                        <form action="/topup/upload/{{ req.id }}" method="get">
+                            <button type="submit">📎 Прикрепить файл</button>
+                        </form>
+                    {% elif req.status == "waiting_for_confirmation" %}
+                        <span style="color: blue;">Проверка оплаты</span>
+                        {% if req.payment_proof_path %}
+                            📎 Файл отправлен
+                        {% else %}
+                            ⚠️ Файл не загружен
+                        {% endif %}
+                    {% elif req.status == "confirmed" %}
+                        <span style="color: green;">✅ Подтверждено</span>
+                    {% elif req.status == "rejected" %}
+                        <span style="color: red;">❌ Отклонено</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Заявок нет.</p>
+        {% endif %}
+    </div>
+
+    <div class="section" style="text-align: center;">
+        <a href="/logout" class="button" style="background-color: #777;">🚪 Выйти</a>
+    </div>
+<script>
+  function toggleTopups() {
+    const section = document.getElementById("topupSection");
+    section.style.display = section.style.display === "none" ? "block" : "none";
+  }
+</script>
+
+</body>
+</html>

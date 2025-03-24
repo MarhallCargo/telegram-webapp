@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали пользователя</title>
+</head>
+<body>
+    <h1>Детали пользователя: {{ user_detail.username }}</h1>
+    <p>Роль: {{ user_detail.role }}</p>
+    <p>Баланс: {{ user_detail.balance }}</p>
+
+    <h2>Заказы пользователя:</h2>
+    {% if orders %}
+        <ul>
+        {% for order in orders %}
+            <li>
+                Заказ {{ order.id }}: {{ order.description }} ({{ order.created_at.strftime('%d.%m.%Y') }}) – Статус: {{ order.status }}
+                {% if order.files %}
+                    <ul>
+                    {% for file in order.files %}
+                        <li>
+                            <a href="/download_file/{{ file.id }}" target="_blank">{{ file.filename }}</a>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Заказов нет.</p>
+    {% endif %}
+
+    <h2>История пополнений:</h2>
+    {% if topups %}
+        <ul>
+        {% for t in topups %}
+            <li>
+                📅 {{ t.created_at.strftime('%d.%m.%Y %H:%M') }}<br>
+                💸 {{ t.rub_amount }} руб ≈ {{ t.cny_amount }} ¥<br>
+                Статус: {{ t.status }}
+
+                {% if t.payment_details %}
+                    <br>📝 Реквизиты: {{ t.payment_details }}
+                {% endif %}
+                {% if t.payment_proof_path %}
+                    <br>📎 <a href="/{{ t.payment_proof_path }}" target="_blank">Файл</a>
+                {% endif %}
+                <hr>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Заявок на пополнение нет.</p>
+    {% endif %}
+
+    <a href="/admin/users">← Вернуться к списку пользователей</a>
+    <br>
+    <a href="/logout">Выйти</a>
+</body>
+</html>

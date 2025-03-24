@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Заявки на пополнение</title>
+</head>
+<body>
+    <h1>Заявки на пополнение</h1>
+
+    {% if topups %}
+        <ul>
+        {% for req in topups %}
+            <li>
+                <strong>{{ req.user.username }}</strong> запросил {{ req.rub_amount }} руб (≈ {{ req.cny_amount }} ¥)
+                <br>Статус: {{ req.status }}
+
+                {% if req.status == 'waiting_for_details' or (req.status == 'waiting_for_confirmation' and not req.payment_details) %}
+                    <!-- Форма добавления реквизитов -->
+                    <form action="/admin/topups/{{ req.id }}/add_details" method="post" style="margin-top:5px;">
+                        <input type="text" name="payment_details" placeholder="Введите реквизиты" required>
+                        <button type="submit">Сохранить реквизиты</button>
+                    </form>
+                {% endif %}
+
+                {% if req.status == 'waiting_for_confirmation' %}
+                    {% if req.payment_proof_path %}
+                        <p>📎 Файл от клиента: <a href="/{{ req.payment_proof_path }}" target="_blank">Скачать</a></p>
+                    {% else %}
+                        <p style="color: orange;">⚠️ Без подтверждающего файла!</p>
+                    {% endif %}
+                    <form action="/admin/topups/{{ req.id }}/confirm" method="post" style="display:inline;">
+                        <button type="submit">Подтвердить</button>
+                    </form>
+                    <form action="/admin/topups/{{ req.id }}/reject" method="post" style="display:inline;">
+                        <button type="submit">Отклонить</button>
+                    </form>
+                {% endif %}
+
+                {% if req.status == 'waiting_for_payment' %}
+                    <p style="color: gray;">⏳ Ожидает оплату от клиента</p>
+                {% endif %}
+
+                <hr>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Нет активных заявок.</p>
+    {% endif %}
+
+    <a href="/admin/dashboard">← Назад в админку</a>
+</body>
+</html>

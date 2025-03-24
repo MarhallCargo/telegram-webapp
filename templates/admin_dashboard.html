@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админский кабинет</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fbeaec, #f5f7fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .admin-panel {
+      background-color: white;
+      padding: 40px 32px;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      max-width: 700px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 26px;
+      color: #2c2e33;
+    }
+    .section {
+      margin-bottom: 24px;
+    }
+    .section h3 {
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+    .section form,
+    .section a {
+      display: block;
+      margin-bottom: 12px;
+    }
+    input[type="number"] {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 200px;
+      margin-top: 4px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 16px;
+      background-color: #e47979;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #d16565;
+    }
+    .stats {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .stats a button {
+      width: 100%;
+      background-color: #4a90e2;
+      color: white;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      text-align: left;
+    }
+    .stats a button:hover {
+      background-color: #3b7dc0;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 30px;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-panel">
+    <h1>Админский кабинет</h1>
+    <p style="text-align:center">Добро пожаловать, <strong>{{ user.username }}</strong></p>
+
+    <div class="section">
+      <h3>Установить курс юаня</h3>
+      <form action="/admin/set_yuan_rate" method="post">
+        <label for="new_rate">Новый курс:</label>
+        <input type="number" step="0.01" name="new_rate" id="new_rate" required>
+        <button type="submit">Обновить курс</button>
+      </form>
+    </div>
+
+    <div class="section">
+      <h3>Установить курс доллара</h3>
+      <form action="/admin/set_usd_rate" method="post">
+        <label for="new_usd_rate">Новый курс:</label>
+        <input type="number" step="0.01" name="new_usd_rate" id="new_usd_rate" required>
+        <button type="submit">Обновить курс</button>
+      </form>
+    </div>
+
+    <div class="stats">
+      <a href="/admin/orders/new"><button>📥 Новые заказы — <strong>{{ new_count }}</strong></button></a>
+      <a href="/admin/orders/processing"><button>🛠 В обработке — <strong>{{ processing_count }}</strong></button></a>
+      <a href="/admin/orders/ready"><button>📦 Собранные — <strong>{{ ready_orders_count }}</strong></button></a>
+      <a href="/admin/orders/shipping"><button>🚚 В пути — <strong>{{ shipping_count }}</strong></button></a>
+      <a href="/admin/orders/waiting_details"><button>📄 Ожидают реквизиты — <strong>{{ waiting_details_count }}</strong></button></a>
+      <a href="/admin/orders/waiting_payment"><button>💳 Ожидают оплату — <strong>{{ waiting_payment_count }}</strong></button></a>
+      <a href="/admin/orders/confirming"><button>🔍 На подтверждение — <strong>{{ confirming_count }}</strong></button></a>
+    </div>
+
+    <div class="actions">
+      <a href="/admin/users"><button>👥 Список пользователей</button></a>
+      <a href="/admin/topups"><button>💰 Заявки на пополнение</button></a>
+      <a href="/dashboard"><button>🏠 Вернуться в личный кабинет</button></a>
+      <a href="/logout"><button>🚪 Выйти</button></a>
+    </div>
+  </div>
+</body>
+</html>

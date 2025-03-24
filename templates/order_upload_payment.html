@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Загрузка оплаты</title>
+</head>
+<body>
+    <h1>📎 Загрузка подтверждающего файла</h1>
+    <p>Заказ №{{ order.id }} — {{ order.description }}</p>
+
+    <form action="/order/upload_payment/{{ order.id }}" method="post" enctype="multipart/form-data">
+        <label for="file">Файл оплаты:</label><br>
+        <input type="file" name="file" accept=".jpg,.jpeg,.png,.pdf" required><br><br>
+        <button type="submit">📤 Отправить</button>
+    </form>
+
+    <br>
+    <a href="/dashboard"><button>← Назад</button></a>
+</body>
+</html>

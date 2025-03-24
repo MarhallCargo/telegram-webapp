@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Пополнение баланса</title>
+</head>
+<body>
+    <h1>Пополнение баланса</h1>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form action="/balance/topup" method="post">
+        <label for="cny_amount">Сколько юаней хотите купить:</label>
+        <input type="number" id="cny_amount" name="cny_amount" min="1" required><br><br>
+
+        <p>Текущий базовый курс: <strong>{{ rate }} ₽/¥</strong></p>
+        <p id="commission_info" style="margin-bottom: 5px;"></p>
+        <p>К оплате: <strong id="rub_result">0</strong> рублей</p>
+
+        <button type="submit">Отправить заявку</button>
+    </form>
+
+    <br>
+    <a href="/dashboard">Вернуться в кабинет</a>
+
+    <script>
+    const cnyInput = document.getElementById("cny_amount");
+    const rubResult = document.getElementById("rub_result");
+    const commissionInfo = document.getElementById("commission_info");
+
+    const baseRate = {{ rate }};
+
+    function getCommission(yuan) {
+        if (yuan >= 30000) return 3.5;
+        if (yuan >= 10000) return 4;
+        if (yuan >= 2500) return 5;
+        if (yuan >= 350) return 8;
+        return null;
+    }
+
+    cnyInput.addEventListener("input", () => {
+        const yuan = parseInt(cnyInput.value) || 0;
+        const commission = getCommission(yuan);
+
+        if (commission === null) {
+            rubResult.textContent = "Слишком мало юаней";
+            commissionInfo.textContent = "";
+            return;
+        }
+
+        const rateWithCommission = baseRate * (1 + commission / 100);
+        const rubAmount = Math.ceil(yuan * rateWithCommission);
+
+        commissionInfo.innerHTML = `Итоговый курс: <strong>${rateWithCommission.toFixed(2)} ₽/¥</strong> (комиссия ${commission}%)`;
+        rubResult.textContent = rubAmount;
+    });
+    </script>
+</body>
+</html>

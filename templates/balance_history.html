@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>История баланса</title>
+</head>
+<body>
+    <h1>История пополнений</h1>
+
+    {% if history %}
+        <ul>
+            {% for item in history %}
+                <li>
+                    📅 {{ item.created_at.strftime('%d.%m.%Y %H:%M') }}<br>
+                    Пополнение: {{ item.rub_amount }} руб ≈ {{ item.cny_amount }} ¥
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Пополнений пока не было.</p>
+    {% endif %}
+
+    <a href="/dashboard">← Назад</a>
+</body>
+</html>

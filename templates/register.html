@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fbeaec, #f5f7fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 24px;
+      color: #2c3e50;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #e47979;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #d16565;
+    }
+    .social-button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      background-color: white;
+      color: #444;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .social-button:hover {
+      background-color: #f3f3f3;
+    }
+    .social-button img {
+      height: 18px;
+      margin-right: 8px;
+    }
+    .center {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    a {
+      color: #4A90E2;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .divider {
+      text-align: center;
+      margin: 20px 0 10px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Регистрация</h1>
+
+    {% if error %}
+      <p style="color: red; text-align: center;">{{ error }}</p>
+    {% endif %}
+
+    <form action="/auth/register" method="post">
+      <input type="text" name="username" placeholder="Логин" required>
+      <input type="password" name="password" placeholder="Пароль" required>
+      <button type="submit">Зарегистрироваться</button>
+    </form>
+
+    <div class="divider">или через</div>
+
+    <!-- Google -->
+    <a href="/auth/google/login">
+      <div class="social-button">
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+        Google
+      </div>
+    </a>
+
+    <!-- Apple -->
+    <a href="/auth/apple/login">
+      <div class="social-button" style="background-color: black; color: white;">
+         Apple
+      </div>
+    </a>
+
+    <!-- Telegram -->
+    <a href="https://t.me/app_marshallbot">
+      <div class="social-button">
+        🤖 Telegram
+      </div>
+    </a>
+
+    <div class="center">
+      Уже зарегистрированы? <a href="/login">Войти</a>
+    </div>
+  </div>
+</body>
+</html>

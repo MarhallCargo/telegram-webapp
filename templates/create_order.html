@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Создать заказ</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fbeaec, #f5f7fa);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      max-width: 700px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c2e33;
+    }
+    h3 {
+      margin-top: 24px;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+    input[type="url"], input[type="file"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    textarea::placeholder {
+      opacity: 0.5;
+      font-style: italic;
+    }
+    .btn {
+      padding: 10px 16px;
+      background-color: #e47979;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background-color: #d16565;
+    }
+    .block {
+      border: 1px solid #f0f0f0;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      background: #fafafa;
+    }
+    .top-links {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .chat-block {
+      margin-top: 32px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Создать заказ</h1>
+    <div style="margin: 16px 0; padding: 16px; background-color: #f5f5f5; border-radius: 12px;">
+      <p style="margin-bottom: 10px;">
+        Если вам удобнее оформить заказ в виде таблицы, вы можете <a href="/static/templates/order_template.xlsx" download style="color: #e47979; font-weight: bold;">скачать шаблон</a>.
+        Заполните его и отправьте через форму ниже — это поможет нам быстрее обработать вашу заявку.
+      </p>
+      <a href="/static/templates/order_template.xlsx" download class="button">📥 Скачать шаблон Excel</a>
+    </div>
+
+    <form id="orderForm" action="/create_order" method="post" enctype="multipart/form-data">
+
+      <!-- 🔗 Ссылки -->
+      <div class="top-links">
+        <h3>Ссылки на товар</h3>
+        <button type="button" class="btn" onclick="addLink()">➕ Добавить ссылку</button>
+      </div>
+      <div id="linkSection"></div>
+
+      <!-- 📎 Файлы -->
+      <div class="top-links">
+        <h3>Файлы и пояснения</h3>
+        <button type="button" class="btn" onclick="addFile()">📎 Прикрепить файл</button>
+      </div>
+      <div id="fileSection"></div>
+
+      <!-- 💬 Комментарий -->
+      <div class="chat-block">
+        <h3>Чат с менеджером (по заказу)</h3>
+        <textarea name="order_comment" rows="3" placeholder="Здесь можно оставить комментарий к заказу. Например: уточнить срок, спросить у продавца размер, или просто передать сообщение менеджеру."></textarea>
+      </div>
+
+      <!-- 🚀 Отправить -->
+      <button type="submit" class="btn" style="width: 100%; font-weight: 600;">📤 Отправить заказ менеджеру</button>
+    </form>
+  </div>
+
+  <script>
+    let linkCount = 0;
+    let fileCount = 0;
+    const maxLinks = 20;
+
+    function addLink() {
+      if (linkCount >= maxLinks) return alert("Можно добавить максимум 20 ссылок");
+
+      const div = document.createElement("div");
+      div.className = "block";
+      div.innerHTML = `
+        <input type="url" name="links[]" placeholder="Введите ссылку" required>
+        <textarea name="link_notes[]" placeholder="Что спросить у продавца по этой ссылке?" rows="2"></textarea>
+        <button type="button" class="btn" onclick="this.parentElement.remove(); linkCount--;">❌ Удалить</button>
+      `;
+      document.getElementById("linkSection").appendChild(div);
+      linkCount++;
+    }
+
+    function addFile() {
+      const div = document.createElement("div");
+      div.className = "block";
+      div.innerHTML = `
+        <input type="file" name="files[]" required>
+        <textarea name="file_notes[]" placeholder="Пояснение к файлу (необязательно)" rows="2"></textarea>
+        <button type="button" class="btn" onclick="this.parentElement.remove(); fileCount--;">❌ Удалить</button>
+      `;
+      document.getElementById("fileSection").appendChild(div);
+      fileCount++;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fbeaec, #f5f7fa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .login-container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+            padding: 40px 32px;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 26px;
+            color: #2c2e33;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            background-color: #fafbfc;
+            transition: all 0.2s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #e47979;
+            box-shadow: 0 0 0 2px rgba(228, 121, 121, 0.2);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #e47979;
+            color: white;
+            font-size: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #d16565;
+        }
+        .social-button {
+            margin-top: 12px;
+            background-color: #ffffff;
+            color: #444;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+        .social-button:hover {
+            background-color: #f2f2f2;
+        }
+        .social-button img {
+            height: 18px;
+            margin-right: 8px;
+        }
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+        }
+        .register {
+            text-align: center;
+            margin-top: 16px;
+        }
+        .register a {
+            color: #e47979;
+            text-decoration: none;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Вход</h1>
+        {% if error %}<p style="color: red; text-align: center;">{{ error }}</p>{% endif %}
+        <form action="/login" method="post">
+            <input type="text" name="username" placeholder="Логин / Login" required>
+            <input type="password" name="password" placeholder="Пароль / Password" required>
+            <button type="submit">Войти</button>
+        </form>
+
+        <div class="divider">или</div>
+
+        <a href="/auth/google/login" class="social-button">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">Войти через Google
+        </a>
+
+        <a href="/auth/apple/login" class="social-button" style="background-color: black; color: white;">
+             Войти через Apple
+        </a>
+
+        <a href="https://t.me/app_marshallbot" class="social-button">
+            🤖 Войти через Telegram
+        </a>
+
+        <div class="register">
+            <p>Нет аккаунта? <a href="/auth/register">Регистрация</a></p>
+        </div>
+    </div>
+</body>
+</html>
